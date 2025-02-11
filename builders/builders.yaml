@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: builders
+  labels:
+    app: volume-test
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: volume-test
+  template:
+    metadata:
+      labels:
+        app: volume-test
+    spec:
+      nodeName: k8s-worker-2
+      containers:
+      - name: volume-test
+        image: couchbasebuild/server-linux-build:latest
+        command: ["/tini", "/bin/sh", "--", "-c", "sleep infinity"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "10"
+          requests:
+            cpu: "4"
+        livenessProbe:
+          exec:
+            command:
+              - ls
+              - /opt/couchbase
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: workdir
+          mountPath: /data
+        - name: reporef
+          mountPath: /.reporef
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: reporef
+        persistentVolumeClaim:
+          claimName: reporef
+      - name: workdir
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              storageClassName: longhorn-workdir
+              resources:
+                requests:
+                  storage: 30Gi

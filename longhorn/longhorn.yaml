@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: longhorn-system
+    server: 'https://kubernetes.default.svc'
+  source:
+    chart: longhorn
+    repoURL: https://charts.longhorn.io
+    targetRevision: 1.8.0
+    helm:
+      valuesObject:
+        # Necessary for installation via GitOps tools
+        preUpgradeChecker:
+          jobEnabled: false
+  project: default
+  syncPolicy:
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - SkipDryRunOnMissingResource=true
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
+

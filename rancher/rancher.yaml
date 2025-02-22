@@ -15,7 +15,7 @@ spec:
     targetRevision: 2.10.2
     helm:
       valuesObject:
-        hostname: rancher.172.23.97.75.sslip.io
+        hostname: rancher.172.23.113.88.sslip.io
         bootstrapPassword: bootstrapPassword
         replicas: 1
   project: default

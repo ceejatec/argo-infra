@@ -14,7 +14,6 @@ spec:
       labels:
         app: volume-test
     spec:
-      nodeName: k8s-worker-2
       containers:
       - name: volume-test
         image: couchbasebuild/server-linux-build:latest
